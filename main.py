@@ -15,7 +15,7 @@ ghost = pygame.image.load('ghost.png')
 ghost_x = random.randint(0,700)
 ghost_y = random.randint(0,400)
 ghost_rect = ghost.get_rect(center = (ghost_x , ghost_y))
-ghost_speed=5
+ghost_speed = 5
 ghost_direction=pygame.Vector2(0,0)
 
 ghosts = []  # Danh sách các con ma
@@ -47,9 +47,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
     spawn_timer += clock.get_rawtime()
-    if spawn_timer >= spawn_interval:
+    if spawn_timer >= spawn_interval and len(ghosts) <= 5:
         ghosts.append(spawn_ghost())
         spawn_timer = 0
     #character movement
@@ -66,6 +65,7 @@ while running:
 
     # Di chuyển nhân vật đến vị trí chuột
     character_rect.center = (mouse_x, mouse_y)
+    
     for ghost_rect in ghosts:
         screen.blit(pygame.image.load('ghost.png'), ghost_rect)
         # Di chuyển con ma đến nhân vật
