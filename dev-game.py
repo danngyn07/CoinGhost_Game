@@ -20,6 +20,7 @@ def spawn_coin():
     coin = pygame.image.load('environment_11.png')
     coin_rect = coin.get_rect(center = (random.randint(0,700) , random.randint(0,400)))
     return coin_rect
+
 #nen
 bg = pygame.image.load('ground_04.png')
 #khai bao nhan vat
@@ -48,6 +49,7 @@ point = 0
 #khai bao thong tin game
 character_change_movement_speed = 2
 running = True 
+
 while running: 
     #cai dat nen
     screen.blit(bg , (0, 0))
@@ -61,12 +63,15 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RIGHT] and character_rect.centerx <= 675:
         character_rect.centerx += character_change_movement_speed
+        screen.blit(pygame.transform.rotate(character , 90) , character_rect)
     if keys[pygame.K_LEFT] and character_rect.centerx > 20:
         character_rect.centerx -= character_change_movement_speed
+        screen.blit(pygame.transform.rotate(character , -90) , character_rect)
     if keys[pygame.K_DOWN] and character_rect.centery <= 375: 
         character_rect.centery += character_change_movement_speed
     if keys[pygame.K_UP] and character_rect.centery >= 20:
         character_rect.centery -= character_change_movement_speed
+        screen.blit(pygame.transform.rotate(character , 180) , character_rect)
     #spawn_ghost
     ghost_spawn_timer += clock.get_rawtime()
     if ghost_spawn_timer >= ghost_spawn_interval and len(ghosts) < 4:

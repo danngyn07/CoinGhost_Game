@@ -107,7 +107,7 @@ while running:
         screen.blit(pygame.image.load('ghost.png'), ghost_rect)
         ghost_follow(ghost_rect)
         avoid_other_ghosts(ghost_rect, ghosts)
-
+        
     # Coin logic
     for coin_rect in coins:
         screen.blit(pygame.image.load('environment_11.png'), coin_rect)
@@ -118,6 +118,6 @@ while running:
             print(point)
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(120)
 
 pygame.quit()
