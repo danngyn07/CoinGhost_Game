@@ -41,7 +41,7 @@ def spawn_coin():
     coin = pygame.image.load('environment_11.png')
     coin_rect = coin.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return coin_rect
-def drawWWindowGame():
+def drawWindowGame():
     global move_Count
     if move_Count + 1 >= 12:
         move_Count = 0
@@ -59,7 +59,7 @@ def drawWWindowGame():
     if down:
         screen.blit(move_down[move_Count//4] , character_rect)
         move_Count += 1
-
+    
 # Background
 bg = pygame.image.load('ground_04.png')
 
@@ -71,7 +71,7 @@ character_rect = character.get_rect(center=(character_x, character_y))
 # Character Movement
 move_down = [pygame.image.load('move_down.png') , pygame.image.load('move_down1.png') ,pygame.image.load('move_down2.png')]
 move_up = [pygame.image.load('move_up.png') , pygame.image.load('move_up1.png') , pygame.image.load('move_up2.png')]
-move_right = [pygame.image.load('move_r.png') , pygame.image.load('move_r2.png') , pygame.image.load('move_r2.png')]
+move_right = [pygame.image.load('move_r.png') , pygame.image.load('move_r1.png') , pygame.image.load('move_r2.png')]
 move_left = [pygame.image.load('move_l.png') ,pygame.image.load('move_l1.png') , pygame.image.load('move_l2.png')]
 right , left  , up , down = False , False , False , False
 move_Count = 0
@@ -109,26 +109,25 @@ while running:
         character_rect.centerx += character_change_movement_speed
         left , up , down = False , False , False   
         right = True
-        drawWWindowGame()
+        
     if keys[pygame.K_LEFT] and character_rect.centerx > 20:
         character_rect.centerx -= character_change_movement_speed
         right , up , down = False,False ,False 
         left = True
-        drawWWindowGame()
+        
     if keys[pygame.K_DOWN] and character_rect.centery <= 375:
         character_rect.centery += character_change_movement_speed
         right , left , up = False,False ,False 
         down = True
-        drawWWindowGame()
+        
     if keys[pygame.K_UP] and character_rect.centery >= 20:
         character_rect.centery -= character_change_movement_speed
         right , left , down = False , False , False 
         up = True
-        drawWWindowGame()
-    else :
-        right , left , down , up = False ,False ,False ,False 
-        move_Count = 0
-        drawWWindowGame()
+    
+    
+    drawWindowGame()
+    right , left  , up , down = False , False , False , False   
     # Spawn ghosts
     ghost_spawn_timer += clock.get_rawtime()
     if ghost_spawn_timer >= ghost_spawn_interval and len(ghosts) < 4:
@@ -157,8 +156,7 @@ while running:
             print(point)
 
     pygame.display.update()
-    
-    
-    clock.tick(20)
+
+    clock.tick(50)
 
 pygame.quit()
