@@ -1,5 +1,4 @@
-import pygame, random, math
-
+import pygame, random
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -15,26 +14,9 @@ def ghost_follow(ghost_rect):
     if character_rect.centery < ghost_rect.centery:
         ghost_rect.centery -= 1
 
-def avoid_other_ghosts(ghost_rect, ghosts):
-    for other_ghost in ghosts:
-        if other_ghost != ghost_rect:
-            distance = math.dist(ghost_rect.center, other_ghost.center)
-            if distance < 50:  # Adjust the minimum distance as needed
-                if ghost_rect.centerx > other_ghost.centerx:
-                    ghost_rect.centerx += 1
-                else:
-                    ghost_rect.centerx -= 1
-                if ghost_rect.centery > other_ghost.centery:
-                    ghost_rect.centery += 1
-                else:
-                    ghost_rect.centery -= 1
-
-def spawn_ghost(ghosts):
+def spawn_ghost():
     ghost = pygame.image.load('ghost.png')
-    while True:
-        ghost_rect = ghost.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
-        if all(math.dist(ghost_rect.center, other_ghost.center) > 50 for other_ghost in ghosts):
-            break
+    ghost_rect = ghost.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return ghost_rect
 
 def spawn_coin():
@@ -42,23 +24,25 @@ def spawn_coin():
     coin_rect = coin.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return coin_rect
 
-# Background
+# Load images
 bg = pygame.image.load('ground_04.png')
+character = pygame.image.load('playerFace_dark.png')
+ghost_image = pygame.image.load('ghost.png')
+coin_image = pygame.image.load('environment_11.png')
 
 # Character setup
-character = pygame.image.load('playerFace_dark.png')
 character_x = 350
 character_y = 200
 character_rect = character.get_rect(center=(character_x, character_y))
 
 # Ghost setup
 ghosts = []
-ghost_spawn_timer = 5000
+ghost_spawn_timer = 0
 ghost_spawn_interval = 5000
 
 # Coin setup
 coins = []
-coin_spawn_timer = 2000
+coin_spawn_timer = 0
 coin_spawn_interval = 2000
 
 # Score
@@ -91,28 +75,29 @@ while running:
         character_rect.centery -= character_change_movement_speed
 
     # Spawn ghosts
-    ghost_spawn_timer += clock.get_rawtime()
+    ghost_spawn_timer += clock.get_time()
     if ghost_spawn_timer >= ghost_spawn_interval and len(ghosts) < 4:
-        ghosts.append(spawn_ghost(ghosts))
+        ghosts.append(spawn_ghost())
         ghost_spawn_timer = 0
 
     # Spawn coins
-    coin_spawn_timer += clock.get_rawtime()
+    coin_spawn_timer += clock.get_time()
     if coin_spawn_timer >= coin_spawn_interval and len(coins) <= 5:
         coins.append(spawn_coin())
         coin_spawn_timer = 0
 
     # Ghost logic
     for ghost_rect in ghosts:
-        screen.blit(pygame.image.load('ghost.png'), ghost_rect)
+        screen.blit(ghost_image, ghost_rect)
         ghost_follow(ghost_rect)
-        avoid_other_ghosts(ghost_rect, ghosts)
+        
+        if character_rect.colliderect(ghost_rect):
+            running = False  # phan nay ma cham char thi quit
 
     # Coin logic
     for coin_rect in coins:
-        screen.blit(pygame.image.load('environment_11.png'), coin_rect)
-        collide = pygame.Rect.colliderect(character_rect, coin_rect)
-        if collide:
+        screen.blit(coin_image, coin_rect)
+        if character_rect.colliderect(coin_rect):
             coins.remove(coin_rect)
             point += 1
             print(point)
