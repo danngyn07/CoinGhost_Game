@@ -65,10 +65,10 @@ ghost_image = pygame.image.load('ghost.png')
 game_over_image = pygame.image.load('gameover.png')
 
 # Resize game over image
-game_over_image = pygame.transform.scale(game_over_image, (400, 200))  
+game_over_image = pygame.transform.scale(game_over_image, (500, 100))  
 
 # Load font
-font = pygame.font.Font('freesansbold.ttf', 32)  
+font = pygame.font.Font('MinecraftRegular-Bmg3.ttf', 32)  
 
 # Character setup
 character_x = 350
@@ -172,7 +172,7 @@ while running:
         screen.blit(score_text, (10, 10))
 
     else:
-        game_over_rect = game_over_image.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+        game_over_rect = game_over_image.get_rect(center=(screen.get_width() // 2 , screen.get_height() // 2- 50))
         screen.blit(game_over_image, game_over_rect)
 
         final_score_text = font.render('Final Score: ' + str(point), True, (255, 255, 255))
