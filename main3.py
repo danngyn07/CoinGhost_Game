@@ -107,12 +107,12 @@ def draw_background():
     bg_x = max(0, min(character_rect.centerx - screen.get_width() // 2, bg.get_width() - screen.get_width()))
     bg_y = max(0, min(character_rect.centery - screen.get_height() // 2, bg.get_height() - screen.get_height()))
     screen.blit(bg, (0, 0), (bg_x, bg_y, screen.get_width(), screen.get_height()))
-
+    
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+    draw_background()
     if not game_over:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] and character_rect.centerx <= 675:
@@ -150,8 +150,7 @@ while running:
             coins.append(spawn_coin())
             coin_spawn_timer = 0
 
-        draw_background()
-        screen.blit(character, character_rect)
+       
 
         
         #Ghost logic
