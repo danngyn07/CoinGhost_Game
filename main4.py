@@ -64,14 +64,15 @@ def reset_game():
 
 #Load images
 asset_path = 'assets'
-coin_image = pygame.image.load(os.path.join(asset_path, 'environment_11.png'))
-bg = pygame.image.load(os.path.join(asset_path, 'ground_04.png'))
+coin_image = pygame.image.load(os.path.join(asset_path, 'environment_11.png')).convert_alpha()
+bg = pygame.image.load(os.path.join(asset_path, 'ground_04.png')).convert()
 bg_width, bg_height = bg.get_size()
 bg = pygame.transform.scale(bg, (bg_width * 2, bg_height * 2))
-character = pygame.image.load(os.path.join(asset_path, 'move_down.png'))
-ghost_image = pygame.image.load(os.path.join(asset_path, 'ghost.png'))
-game_over_image = pygame.image.load(os.path.join(asset_path, 'gameover.png'))
-start_game_image = pygame.image.load(os.path.join(asset_path, 'start.png'))
+character = pygame.image.load(os.path.join(asset_path, 'move_down.png')).convert_alpha()
+ghost_image = pygame.image.load(os.path.join(asset_path, 'ghost.png')).convert_alpha()
+game_over_image = pygame.image.load(os.path.join(asset_path, 'gameover.png')).convert_alpha()
+start_game_image = pygame.image.load(os.path.join(asset_path, 'start.png')).convert_alpha()
+power_up_image = pygame.image.load(os.path.join(asset_path, 'powerup.png')).convert_alpha()
 
 #Resize images
 game_over_image = pygame.transform.scale(game_over_image, (500, 100))
