@@ -15,7 +15,19 @@ def ghost_follow(ghost_rect):
         ghost_rect.centery += 1
     if character_rect.centery < ghost_rect.centery:
         ghost_rect.centery -= 1
-
+def avoid_other_ghosts(ghost_rect, ghosts):
+    for other_ghost in ghosts:
+        if other_ghost != ghost_rect:
+            distance = math.dist(ghost_rect.center, other_ghost.center)
+            if distance < 50:  # Adjust the minimum distance as needed
+                if ghost_rect.centerx > other_ghost.centerx:
+                    ghost_rect.centerx += 1
+                else:
+                    ghost_rect.centerx -= 1
+                if ghost_rect.centery > other_ghost.centery:
+                    ghost_rect.centery += 1
+                else:
+                    ghost_rect.centery -= 1
 def spawn_ghost():
     ghost_rect = ghost_image.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return ghost_rect
@@ -46,21 +58,25 @@ def draw_window_game():
         move_count += 1
 
 def reset_game():
-    global character_rect, ghosts, coins, point, ghost_spawn_timer, coin_spawn_timer, game_over, high_score
+    global character_rect, ghosts, coins, point, ghost_spawn_timer, coin_spawn_timer, game_over, high_score , power_up_list , power_up_count , power_up_time , character_change_movement_speed
     character_rect = character.get_rect(center=(350, 200))
     ghosts = []
     coins = []
+    power_up_list = []
     if point > high_score:
         high_score = point
     point = 0
     ghost_spawn_timer = pygame.time.get_ticks()
     coin_spawn_timer = pygame.time.get_ticks()
+    power_up_count = 1
+    power_up_time = 0
+    character_change_movement_speed = 2 
     game_over = False
 
 #vacham
 def check_collision(character_rect, ghost_rect):
     distance = math.sqrt((character_rect.centerx - ghost_rect.centerx) ** 2 + (character_rect.centery - ghost_rect.centery) ** 2)
-    if distance < 2:
+    if distance < 20:
         return True
     else:
         return False
@@ -81,7 +97,7 @@ start_game_image = pygame.transform.scale(start_game_image, (300, 90))
 
 # Load font
 font = pygame.font.Font('MinecraftRegular-Bmg3.ttf', 32)
-
+font_score = pygame.font.Font('MinecraftRegular-Bmg3.ttf' , 15)
 # Character setup
 character_x = 350
 character_y = 200
@@ -126,7 +142,6 @@ power_up_count = 1
 power_up_list = []
 power_up_time = 0
 power_up = False
-
 
 # Game setup
 character_change_movement_speed = 2
@@ -182,22 +197,22 @@ while running:
         draw_background()
         if not game_over:
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_RIGHT] and character_rect.centerx <= 675:
+            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and character_rect.centerx <= 675:
                 character_rect.centerx += character_change_movement_speed
                 left, up, down = False, False, False
                 right = True
 
-            if keys[pygame.K_LEFT] and character_rect.centerx > 20:
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and character_rect.centerx > 20:
                 character_rect.centerx -= character_change_movement_speed
                 right, up, down = False, False, False
                 left = True
 
-            if keys[pygame.K_DOWN] and character_rect.centery <= 375:
+            if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and character_rect.centery <= 375:
                 character_rect.centery += character_change_movement_speed
                 right, left, up = False, False, False
                 down = True
 
-            if keys[pygame.K_UP] and character_rect.centery >= 20:
+            if (keys[pygame.K_UP] or keys[pygame.K_w]) and character_rect.centery >= 20:
                 character_rect.centery -= character_change_movement_speed
                 right, left, down = False, False, False
                 up = True
@@ -225,8 +240,8 @@ while running:
             for ghost_rect in ghosts:
                 screen.blit(ghost_image, ghost_rect)
                 ghost_follow(ghost_rect)
+                avoid_other_ghosts(ghost_rect , ghosts)
                 if check_collision(character_rect, ghost_rect):
-                #if character_rect.colliderect(ghost_rect):
                     game_over = True
 
             # Coin logic
@@ -235,7 +250,7 @@ while running:
                 if character_rect.colliderect(coin_rect):
                     coins.remove(coin_rect)
                     point += 1
-                    print(point)
+                    
             for power_up_rect in power_up_list:
                 screen.blit(power_up_image , power_up_rect)
                 if character_rect.colliderect(power_up_rect):
@@ -244,25 +259,24 @@ while running:
                     power_up_count += 1
                     
             #power_up
-            
-            if power_up_count >= 1 and keys[pygame.K_LSHIFT] and power_up == False:
-                power_up = True
-                character_change_movement_speed += 3
-                power_up_count -= 1 
-                power_up_time = 0
-                print("yeah")
-            power_up_time += clock.get_time()
-            if power_up_time >= 3000 and power_up == True:
-                character_change_movement_speed -= 3
-                power_up_time = 0
-                print("het power up mat roi")
-                power_up = False
+            if event.type == pygame.KEYDOWN:
+                if power_up_count >= 1 and (event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT ) and power_up == False:
+                    power_up = True
+                    character_change_movement_speed += 3
+                    power_up_count -= 1 
+                    power_up_time = 0
+                    print("yeah")
+                power_up_time += clock.get_time()
+                if power_up_time >= 2000 and power_up == True:
+                    character_change_movement_speed -= 3
+                    power_up_time = 0
+                    print("het power up mat roi")
+                    power_up = False
 
-
-
-            score_text = font.render('Score: ' + str(point), True, (255, 255, 255))
-            screen.blit(score_text, (10, 10))
-
+            score_text = font_score.render('Score: ' + str(point), True, (255, 255, 255))
+            screen.blit(score_text, (5, 5))
+            power_up_text = font_score.render('Power Up: ' + str(power_up_count) ,True, (250 , 250 , 250))
+            screen.blit(power_up_text , (5,20))
         else:
             game_over_rect = game_over_image.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 50))
             screen.blit(game_over_image, game_over_rect)

@@ -58,7 +58,7 @@ def reset_game():
 #vacham
 def check_collision(character_rect, ghost_rect):
     distance = math.sqrt((character_rect.centerx - ghost_rect.centerx) ** 2 + (character_rect.centery - ghost_rect.centery) ** 2)
-    if distance < 2:
+    if distance < 10:
         return True
     else:
         return False
