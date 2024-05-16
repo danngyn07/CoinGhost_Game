@@ -1,4 +1,4 @@
-import pygame, random, os
+import pygame, random, os, math
 from pygame import gfxdraw
 
 pygame.init()
@@ -55,6 +55,13 @@ def reset_game():
     coin_spawn_timer = pygame.time.get_ticks()
     game_over = False
 
+#vacham
+def check_collision(character_rect, ghost_rect):
+    distance = math.sqrt((character_rect.centerx - ghost_rect.centerx) ** 2 + (character_rect.centery - ghost_rect.centery) ** 2)
+    if distance < 2:
+        return True
+    else:
+        return False
 # Load images
 asset_path = 'assets'
 coin_image = pygame.image.load(os.path.join(asset_path, 'environment_11.png')).convert_alpha()
@@ -199,7 +206,8 @@ while running:
             for ghost_rect in ghosts:
                 screen.blit(ghost_image, ghost_rect)
                 ghost_follow(ghost_rect)
-                if character_rect.colliderect(ghost_rect):
+                if check_collision(character_rect, ghost_rect):
+                #if character_rect.colliderect(ghost_rect):
                     game_over = True
 
             # Coin logic
