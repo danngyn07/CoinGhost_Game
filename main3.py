@@ -24,7 +24,7 @@ def spawn_coin():
     coin_rect = coin_image.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return coin_rect
 
-def drawWindowGame():
+def Character_movement():
     global move_Count
     if move_Count + 1 >= 12:
         move_Count = 0
@@ -136,7 +136,7 @@ while running:
             up = True
         
     
-        drawWindowGame()
+        Character_movement()
         right , left  , up , down = False , False , False , False  
          # Spawn ghosts
         ghost_spawn_timer += clock.get_time()
@@ -150,9 +150,6 @@ while running:
             coins.append(spawn_coin())
             coin_spawn_timer = 0
 
-       
-
-        
         #Ghost logic
         for ghost_rect in ghosts:
             screen.blit(ghost_image, ghost_rect)
@@ -166,7 +163,6 @@ while running:
             if character_rect.colliderect(coin_rect):
                 coins.remove(coin_rect)
                 point += 1
-                print(point)
 
         score_text = font.render('Score: ' + str(point), True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
@@ -191,6 +187,6 @@ while running:
                     reset_game()
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(50)
 
 pygame.quit()
