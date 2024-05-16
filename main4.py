@@ -24,7 +24,9 @@ def spawn_ghost():
 def spawn_coin():
     coin_rect = coin_image.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return coin_rect
-
+def spawn_power_up():
+    power_up_rect = power_up_image.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
+    return power_up_rect
 def draw_window_game():
     global move_count
     if move_count + 1 >= 12:
@@ -45,15 +47,19 @@ def draw_window_game():
         move_count += 1
 
 def reset_game():
-    global character_rect, ghosts, coins, point, ghost_spawn_timer, coin_spawn_timer, game_over, high_score
+    global character_rect, ghosts, coins, point, ghost_spawn_timer, coin_spawn_timer, game_over, high_score , power_up_spawn_timer , power_up_count , power_up_list , character_change_movement_speed
     character_rect = character.get_rect(center=(350, 200))
     ghosts = []
     coins = []
+    power_up_list = []
     if point > high_score:
         high_score = point
     point = 0
     ghost_spawn_timer = 0
     coin_spawn_timer = 0
+    power_up_count = 1
+    power_up_spawn_timer = 0
+    character_change_movement_speed = 2
     game_over = False
 
 # Load images
@@ -65,6 +71,7 @@ character = pygame.image.load('move_down.png')
 ghost_image = pygame.image.load('ghost.png')
 game_over_image = pygame.image.load('gameover.png')
 start_game_image = pygame.image.load('start.png')
+power_up_image = pygame.image.load('powerup.png')
 
 # Resize images
 game_over_image = pygame.transform.scale(game_over_image, (500, 100))
@@ -99,7 +106,14 @@ coin_spawn_interval = 2000
 # Score
 point = 0
 high_score = 0
-
+#Power up setup
+power_up_rect = power_up_image.get_rect(center = (random.randint(0,700) , random.randint(0,400)))
+power_up_spawn_timer = 0
+power_up_spawn_interval = 7000
+power_up_count = 1
+power_up_list = []
+power_up_time = 0
+power_up = False
 # Game setup
 character_change_movement_speed = 2
 game_over = False
@@ -135,13 +149,13 @@ while running:
             if game_over and event.key == pygame.K_SPACE:
                 reset_game()
                 game_started = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
             if not game_started:
                 mouse_pos = event.pos
                 if draw_start_button().collidepoint(mouse_pos):
                     game_started = True
 
-    if game_started:
+    if game_started :
         draw_background()
         if not game_over:
             keys = pygame.key.get_pressed()
@@ -167,7 +181,7 @@ while running:
 
             draw_window_game()
             right, left, up, down = False, False, False, False
-
+            
             # Spawn ghosts
             ghost_spawn_timer += clock.get_time()
             if ghost_spawn_timer >= ghost_spawn_interval and len(ghosts) < 4:
@@ -176,24 +190,47 @@ while running:
 
             # Spawn coins
             coin_spawn_timer += clock.get_time()
-            if coin_spawn_timer >= coin_spawn_interval and len(coins) <= 5:
+            if coin_spawn_timer >= coin_spawn_interval and len(coins) < 5:
                 coins.append(spawn_coin())
                 coin_spawn_timer = 0
-
+            #Spawn power_up
+            power_up_spawn_timer += clock.get_time()
+            if power_up_spawn_timer >= power_up_spawn_interval and len(power_up_list) <= 1:
+                power_up_list.append(spawn_power_up())
+                power_up_spawn_timer = 0
             # Ghost logic
             for ghost_rect in ghosts:
                 screen.blit(ghost_image, ghost_rect)
                 ghost_follow(ghost_rect)
                 if character_rect.colliderect(ghost_rect):
                     game_over = True
-
             # Coin logic
             for coin_rect in coins:
                 screen.blit(coin_image, coin_rect)
                 if character_rect.colliderect(coin_rect):
                     coins.remove(coin_rect)
                     point += 1
-                    print(point)
+            for power_up_rect in power_up_list:
+                screen.blit(power_up_image , power_up_rect)
+                if character_rect.colliderect(power_up_rect):
+                    point += 2
+                    power_up_list.remove(power_up_rect)
+                    power_up_count += 1
+                    
+            #power_up
+            
+            if power_up_count >= 1 and keys[pygame.K_LSHIFT] and power_up == False:
+                power_up = True
+                character_change_movement_speed += 3
+                power_up_count -= 1 
+                power_up_time = 0
+                print("yeah")
+            power_up_time += clock.get_time()
+            if power_up_time >= 3000 and power_up == True:
+                character_change_movement_speed -= 3
+                power_up_time = 0
+                print("het power up mat roi")
+                power_up = False
 
             score_text = font.render('Score: ' + str(point), True, (255, 255, 255))
             screen.blit(score_text, (10, 10))
