@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, os
 from pygame import gfxdraw
 
 pygame.init()
@@ -17,7 +17,7 @@ def ghost_follow(ghost_rect):
         ghost_rect.centery -= 1
 
 def spawn_ghost():
-    ghost = pygame.image.load('ghost.png')
+    ghost = pygame.image.load(os.path.join(asset_path, 'ghost.png'))
     ghost_rect = ghost.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return ghost_rect
 
@@ -56,17 +56,18 @@ def reset_game():
     coin_spawn_timer = 0
     game_over = False
 
-# Load images
-coin_image = pygame.image.load('environment_11.png')
-bg = pygame.image.load('ground_04.png')
+#Load images
+asset_path = 'assets'
+coin_image = pygame.image.load(os.path.join(asset_path, 'environment_11.png'))
+bg = pygame.image.load(os.path.join(asset_path, 'ground_04.png'))
 bg_width, bg_height = bg.get_size()
-bg = pygame.transform.scale(bg, (bg_width * 2, bg_height * 2))  # Phóng to nền
-character = pygame.image.load('move_down.png')
-ghost_image = pygame.image.load('ghost.png')
-game_over_image = pygame.image.load('gameover.png')
-start_game_image = pygame.image.load('start.png')
+bg = pygame.transform.scale(bg, (bg_width * 2, bg_height * 2))
+character = pygame.image.load(os.path.join(asset_path, 'move_down.png'))
+ghost_image = pygame.image.load(os.path.join(asset_path, 'ghost.png'))
+game_over_image = pygame.image.load(os.path.join(asset_path, 'gameover.png'))
+start_game_image = pygame.image.load(os.path.join(asset_path, 'start.png'))
 
-# Resize images
+#Resize images
 game_over_image = pygame.transform.scale(game_over_image, (500, 100))
 start_game_image = pygame.transform.scale(start_game_image, (300, 90))
 
@@ -79,10 +80,18 @@ character_y = 200
 character_rect = character.get_rect(center=(character_x, character_y))
 
 # Character Movement
-move_down = [pygame.image.load('move_down.png'), pygame.image.load('move_down1.png'), pygame.image.load('move_down2.png')]
-move_up = [pygame.image.load('move_up.png'), pygame.image.load('move_up1.png'), pygame.image.load('move_up2.png')]
-move_right = [pygame.image.load('move_r.png'), pygame.image.load('move_r1.png'), pygame.image.load('move_r2.png')]
-move_left = [pygame.image.load('move_l.png'), pygame.image.load('move_l1.png'), pygame.image.load('move_l2.png')]
+move_down = [pygame.image.load(os.path.join(asset_path, 'move_down.png')),
+             pygame.image.load(os.path.join(asset_path, 'move_down1.png')),
+             pygame.image.load(os.path.join(asset_path, 'move_down2.png'))]
+move_up = [pygame.image.load(os.path.join(asset_path, 'move_up.png')),
+           pygame.image.load(os.path.join(asset_path, 'move_up1.png')),
+           pygame.image.load(os.path.join(asset_path, 'move_up2.png'))]
+move_right = [pygame.image.load(os.path.join(asset_path, 'move_r.png')),
+              pygame.image.load(os.path.join(asset_path, 'move_r1.png')),
+              pygame.image.load(os.path.join(asset_path, 'move_r2.png'))]
+move_left = [pygame.image.load(os.path.join(asset_path, 'move_l.png')),
+             pygame.image.load(os.path.join(asset_path, 'move_l1.png')),
+             pygame.image.load(os.path.join(asset_path, 'move_l2.png'))]
 right, left, up, down = False, False, False, False
 move_count = 0
 
