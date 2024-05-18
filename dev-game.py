@@ -5,6 +5,7 @@ pygame.init()
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((700, 400), pygame.DOUBLEBUF)
+pygame.display.set_caption("GAME")
 
 def ghost_follow(ghost_rect):
     if character_rect.centerx > ghost_rect.centerx:
