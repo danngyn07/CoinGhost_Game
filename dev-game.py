@@ -2,6 +2,7 @@ import pygame, random, os, math
 from pygame import gfxdraw
 
 pygame.init()
+pygame.mixer.init()
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((700, 400), pygame.DOUBLEBUF)
@@ -15,7 +16,19 @@ def ghost_follow(ghost_rect):
         ghost_rect.centery += 1
     if character_rect.centery < ghost_rect.centery:
         ghost_rect.centery -= 1
-
+def avoid_other_ghosts(ghost_rect, ghosts):
+    for other_ghost in ghosts:
+        if other_ghost != ghost_rect:
+            distance = math.dist(ghost_rect.center, other_ghost.center)
+            if distance < 30:  # Adjust the minimum distance as needed
+                if ghost_rect.centerx > other_ghost.centerx:
+                    ghost_rect.centerx += 1
+                else:
+                    ghost_rect.centerx -= 1
+                if ghost_rect.centery > other_ghost.centery:
+                    ghost_rect.centery += 1
+                else:
+                    ghost_rect.centery -= 1
 def spawn_ghost():
     ghost_rect = ghost_image.get_rect(center=(random.randint(0, 700), random.randint(0, 400)))
     return ghost_rect
@@ -132,6 +145,9 @@ power_up_time = 0
 power_up = False
 
 # Game setup
+pygame.mixer.music.load('nhacbg.wav')
+pygame.mixer.music.play(-1 , 0.0)
+
 character_change_movement_speed = 2
 game_over = False
 game_started = False
@@ -185,7 +201,6 @@ while running:
         draw_background()
         if not game_over:
             keys = pygame.key.get_pressed()
-            keys_shift = pygame.KEYDOWN
             if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and character_rect.centerx <= 675:
                 character_rect.centerx += character_change_movement_speed
                 left, up, down = False, False, False
@@ -221,7 +236,7 @@ while running:
 
             #Spawn power_up
             power_up_spawn_timer += clock.get_time()
-            if power_up_spawn_timer >= power_up_spawn_interval and len(power_up_list) <= 1:
+            if power_up_spawn_timer >= power_up_spawn_interval and len(power_up_list) < 1:
                 power_up_list.append(spawn_power_up())
                 power_up_spawn_timer = 0
 
@@ -229,6 +244,7 @@ while running:
             for ghost_rect in ghosts:
                 screen.blit(ghost_image, ghost_rect)
                 ghost_follow(ghost_rect)
+                avoid_other_ghosts(ghost_rect , ghosts)
                 if check_collision(character_rect, ghost_rect):
                     game_over = True
 
@@ -244,22 +260,23 @@ while running:
                 if character_rect.colliderect(power_up_rect):
                     point += 2
                     power_up_list.remove(power_up_rect)
-                    power_up_count += 1
+                    if power_up_count < 5:
+                        power_up_count += 1
                     
             #power_up
-            
-            if power_up_count >= 1 and keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT] and power_up == False:
-                power_up = True
-                character_change_movement_speed += 3
-                power_up_count -= 1 
-                power_up_time = 0
-                print("yeah")
-            power_up_time += clock.get_time()
-            if power_up_time >= 3000 and power_up == True:
-                character_change_movement_speed -= 3
-                power_up_time = 0
-                print("het power up mat roi")
-                power_up = False
+            if event.type == pygame.KEYDOWN:
+                if power_up_count >= 1 and (event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT ) and power_up == False:
+                    power_up = True
+                    character_change_movement_speed += 2
+                    power_up_count -= 1 
+                    power_up_time = 0
+                    print("yeah")
+                power_up_time += clock.get_time()
+                if power_up_time >= 2000 and power_up == True:
+                    character_change_movement_speed -= 2
+                    power_up_time = 0
+                    print("het power up mat roi")
+                    power_up = False
 
             score_text = font_score.render('Score: ' + str(point), True, (255, 255, 255))
             screen.blit(score_text, (5, 5))
