@@ -2,6 +2,7 @@ import pygame, random, os, math
 from pygame import gfxdraw
 
 pygame.init()
+pygame.mixer.init()
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((700, 400), pygame.DOUBLEBUF)
@@ -19,7 +20,7 @@ def avoid_other_ghosts(ghost_rect, ghosts):
     for other_ghost in ghosts:
         if other_ghost != ghost_rect:
             distance = math.dist(ghost_rect.center, other_ghost.center)
-            if distance < 50:  # Adjust the minimum distance as needed
+            if distance < 30:  # Adjust the minimum distance as needed
                 if ghost_rect.centerx > other_ghost.centerx:
                     ghost_rect.centerx += 1
                 else:
@@ -144,6 +145,9 @@ power_up_time = 0
 power_up = False
 
 # Game setup
+pygame.mixer.music.load('nhacbg.wav')
+pygame.mixer.music.play(-1 , 0.0)
+
 character_change_movement_speed = 2
 game_over = False
 game_started = False
@@ -232,7 +236,7 @@ while running:
 
             #Spawn power_up
             power_up_spawn_timer += clock.get_time()
-            if power_up_spawn_timer >= power_up_spawn_interval and len(power_up_list) <= 1:
+            if power_up_spawn_timer >= power_up_spawn_interval and len(power_up_list) < 1:
                 power_up_list.append(spawn_power_up())
                 power_up_spawn_timer = 0
 
@@ -256,19 +260,20 @@ while running:
                 if character_rect.colliderect(power_up_rect):
                     point += 2
                     power_up_list.remove(power_up_rect)
-                    power_up_count += 1
+                    if power_up_count < 5:
+                        power_up_count += 1
                     
             #power_up
             if event.type == pygame.KEYDOWN:
                 if power_up_count >= 1 and (event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT ) and power_up == False:
                     power_up = True
-                    character_change_movement_speed += 3
+                    character_change_movement_speed += 2
                     power_up_count -= 1 
                     power_up_time = 0
                     print("yeah")
                 power_up_time += clock.get_time()
                 if power_up_time >= 2000 and power_up == True:
-                    character_change_movement_speed -= 3
+                    character_change_movement_speed -= 2
                     power_up_time = 0
                     print("het power up mat roi")
                     power_up = False
